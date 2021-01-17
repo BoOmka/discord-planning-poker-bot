@@ -48,6 +48,11 @@ async def vote(ctx: discord_slash.SlashContext, value: str):
     await _vote(ctx=ctx, value=value)
 
 
+@slash.subcommand(base='poker', name='withdraw', description='Withdraw your vote')
+async def withdraw(ctx: discord_slash.SlashContext):
+    await ctx.send(content='./withdraw stub', complete_hidden=True)
+
+
 @slash.subcommand(base='poker', name='reveal', description="Reveal everyone's vote")
 async def reveal(ctx: discord_slash.SlashContext):
     await ctx.send(content='./reveal stub', complete_hidden=True)

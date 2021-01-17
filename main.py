@@ -12,6 +12,7 @@ VOTE_OPTIONS = [
         'type': discord_slash.SlashCommandOptionType.STRING,
         'name': 'value',
         'description': 'Your vote',
+        'required': True,
         'choices': [
             {'name': '0', 'value': '0'},
             {'name': '0.5', 'value': '0.5'},
@@ -45,11 +46,7 @@ async def vote(ctx: discord_slash.SlashContext, value: str):
     await _vote(ctx=ctx, value=value)
 
 
-@slash.slash(
-    name='ppvote',
-    description='Shortcut for /poker vote',
-    options=VOTE_OPTIONS,
-)
+@slash.slash(name='ppvote', description='Shortcut for /poker vote', options=VOTE_OPTIONS)
 async def vote(ctx: discord_slash.SlashContext, value: str):
     await _vote(ctx=ctx, value=value)
 

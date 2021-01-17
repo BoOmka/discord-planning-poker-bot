@@ -1,0 +1,10 @@
+version: "3.3"
+services:
+  app:
+    container_name: "discord-planning-poker-bot-app"
+    restart: unless-stopped
+    build: .
+    environment:
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+    working_dir: "/app"
+    command: python -O main.py

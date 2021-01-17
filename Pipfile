@@ -1,0 +1,13 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+discord.py = "==1.6.0"
+discord-py-slash-command = "==1.0.8.5"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"

@@ -3,49 +3,47 @@ import os
 import discord.ext
 import discord_slash
 
+import config
+import handlers
+
 intents = discord.Intents.all()
 bot = discord.ext.commands.Bot(command_prefix='/', intents=discord.Intents.all())
 slash = discord_slash.SlashCommand(bot, auto_register=True)
 
-VOTE_OPTIONS = [
+start_options = [
+    {
+        'type': discord_slash.SlashCommandOptionType.STRING,
+        'name': 'comment',
+        'description': 'Optional comment for your Vote',
+        'required': False,
+    }
+]
+vote_options = [
     {
         'type': discord_slash.SlashCommandOptionType.STRING,
         'name': 'value',
         'description': 'Your vote',
         'required': True,
-        'choices': [
-            {'name': '0', 'value': '0'},
-            {'name': '0.5', 'value': '0.5'},
-            {'name': '1', 'value': '1'},
-            {'name': '2', 'value': '2'},
-            {'name': '3', 'value': '3'},
-            {'name': '5', 'value': '5'},
-            {'name': '8', 'value': '8'},
-            {'name': '13', 'value': '13'},
-        ]
+        'choices': [{'name': f'{x}', 'value': f'{x}'} for x in config.VOTE_CHOICES]
     }
 ]
 
 
 # Order matters!
 
-async def _vote(ctx: discord_slash.SlashContext, value: str):
-    await ctx.send(content=f'./vote stub. value={value}', complete_hidden=True)
-
-
-@slash.slash(name='ppvote', description='Shortcut for /poker vote', options=VOTE_OPTIONS)
+@slash.slash(name='ppvote', description='Shortcut for /poker vote', options=vote_options)
 async def ppvote(ctx: discord_slash.SlashContext, value: str):
-    await _vote(ctx=ctx, value=value)
+    return await handlers.vote(ctx=ctx, value=value)
 
 
 @slash.subcommand(
     base='poker',
     name='vote',
     description='Cast a new vote or update existing for current voting',
-    options=VOTE_OPTIONS,
+    options=vote_options,
 )
 async def vote(ctx: discord_slash.SlashContext, value: str):
-    await _vote(ctx=ctx, value=value)
+    return await handlers.vote(ctx=ctx, value=value)
 
 
 @slash.subcommand(base='poker', name='withdraw', description='Withdraw your vote')
@@ -58,9 +56,9 @@ async def reveal(ctx: discord_slash.SlashContext):
     await ctx.send(content='./reveal stub', complete_hidden=True)
 
 
-@slash.subcommand(base='poker', name='start', description='(Re)Start a new vote in this channel')
-async def start(ctx: discord_slash.SlashContext):
-    await ctx.send(content='./start stub', complete_hidden=True)
+@slash.subcommand(base='poker', name='start', description='(Re)Start a new vote in this channel', options=start_options)
+async def start(ctx: discord_slash.SlashContext, comment: str = None):
+    return await handlers.start(ctx=ctx, comment=comment)
 
 
 def main():

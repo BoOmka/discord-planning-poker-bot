@@ -53,7 +53,7 @@ async def withdraw(ctx: discord_slash.SlashContext):
 
 @slash.subcommand(base='poker', name='reveal', description="Reveal everyone's vote")
 async def reveal(ctx: discord_slash.SlashContext):
-    await ctx.send(content='./reveal stub', complete_hidden=True)
+    return await handlers.reveal(ctx=ctx)
 
 
 @slash.subcommand(base='poker', name='start', description='(Re)Start a new vote in this channel', options=start_options)

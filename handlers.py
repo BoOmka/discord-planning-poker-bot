@@ -24,7 +24,7 @@ async def start(ctx: discord_slash.SlashContext, comment: str = None):
     channel_storage = guild_storage.channel_storages[ctx.channel] = storage.ChannelVoteStorage(
         channel=ctx.channel, author=ctx.author, comment=comment,
     )
-    await ctx.send(content='Vote started!', complete_hidden=True)
+    await ctx.send(content='Vote started', hidden=True)
     channel_storage.message = await ctx.channel.send(
         _vote_msg(ctx.author, {}, comment),
         allowed_mentions=discord.AllowedMentions(users=False),
@@ -49,3 +49,28 @@ async def vote(ctx: discord_slash.SlashContext, value: str):
         content=_vote_msg(author=channel_storage.author, votes=channel_storage.votes, comment=channel_storage.comment),
         allowed_mentions=discord.AllowedMentions(users=False)
     )
+
+
+async def reveal(ctx: discord_slash.SlashContext):
+    try:
+        channel_storage = storage_singleton.guild_storages[ctx.guild].channel_storages[ctx.channel]
+    except KeyError:
+        await ctx.send(
+            content="There's no active vote in this channel. You can start one by typing `/poker start`",
+            complete_hidden=True
+        )
+        return
+
+    vote_values = ' '.join(v.value for v in channel_storage.votes.values())
+    vote_name_clarification = f' for vote "{channel_storage.comment}"' if channel_storage.comment else ''
+    answers_per_user = f'\n'.join(f'{author.mention}: {vote.value}' for author, vote in channel_storage.votes.items())
+    msg = await ctx.send(
+        content=(
+            f'Answers{vote_name_clarification} are revealed!\n'
+            f'{vote_values}\n'
+            f'||{answers_per_user}||'
+        ),
+        allowed_mentions=discord.AllowedMentions(users=False)
+    )
+    await msg.edit(suppress=True)
+

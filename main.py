@@ -27,13 +27,15 @@ VOTE_OPTIONS = [
 ]
 
 
-@slash.subcommand(base='poker', name='start', description='(Re)Start a new vote in this channel')
-async def start(ctx: discord_slash.SlashContext):
-    await ctx.send(content='./start stub', complete_hidden=True)
-
+# Order matters!
 
 async def _vote(ctx: discord_slash.SlashContext, value: str):
     await ctx.send(content=f'./vote stub. value={value}', complete_hidden=True)
+
+
+@slash.slash(name='ppvote', description='Shortcut for /poker vote', options=VOTE_OPTIONS)
+async def ppvote(ctx: discord_slash.SlashContext, value: str):
+    await _vote(ctx=ctx, value=value)
 
 
 @slash.subcommand(
@@ -46,14 +48,14 @@ async def vote(ctx: discord_slash.SlashContext, value: str):
     await _vote(ctx=ctx, value=value)
 
 
-@slash.slash(name='ppvote', description='Shortcut for /poker vote', options=VOTE_OPTIONS)
-async def vote(ctx: discord_slash.SlashContext, value: str):
-    await _vote(ctx=ctx, value=value)
-
-
 @slash.subcommand(base='poker', name='reveal', description="Reveal everyone's vote")
 async def reveal(ctx: discord_slash.SlashContext):
     await ctx.send(content='./reveal stub', complete_hidden=True)
+
+
+@slash.subcommand(base='poker', name='start', description='(Re)Start a new vote in this channel')
+async def start(ctx: discord_slash.SlashContext):
+    await ctx.send(content='./start stub', complete_hidden=True)
 
 
 def main():

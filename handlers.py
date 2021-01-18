@@ -93,3 +93,26 @@ async def reveal(ctx: discord_slash.SlashContext) -> None:
         ),
         allowed_mentions=discord.AllowedMentions(users=False)
     )
+
+
+async def withdraw(ctx: discord_slash.SlashContext) -> None:
+    try:
+        channel_storage = storage_singleton.guild_storages[ctx.guild].channel_storages[ctx.channel]
+    except KeyError:
+        await ctx.send(
+            content="There's no active vote in this channel. You can start one by typing `/poker start`",
+            complete_hidden=True
+        )
+        return
+
+    try:
+        del channel_storage.votes[ctx.author]
+    except KeyError:
+        await ctx.send(content="You didn't vote yet.", complete_hidden=True)
+        return
+
+    await ctx.send(content='Your vote is withdrawn!', complete_hidden=True)
+    await channel_storage.message.edit(
+        content=_vote_msg(author=channel_storage.author, votes=channel_storage.votes, comment=channel_storage.comment),
+        allowed_mentions=discord.AllowedMentions(users=False)
+    )

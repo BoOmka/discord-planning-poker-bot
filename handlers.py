@@ -19,7 +19,7 @@ def _vote_msg(author: discord.User, votes: typing.Dict[discord.User, storage.Vot
     )
 
 
-async def start(ctx: discord_slash.SlashContext, comment: str = None):
+async def start(ctx: discord_slash.SlashContext, comment: str = None) -> None:
     guild_storage = storage_singleton.guild_storages.setdefault(ctx.guild, storage.GuildVoteStorage(guild=ctx.guild))
     channel_storage = guild_storage.channel_storages[ctx.channel] = storage.ChannelVoteStorage(
         channel=ctx.channel, author=ctx.author, comment=comment,
@@ -32,7 +32,7 @@ async def start(ctx: discord_slash.SlashContext, comment: str = None):
     await channel_storage.message.edit(suppress=True)
 
 
-async def vote(ctx: discord_slash.SlashContext, value: str):
+async def vote(ctx: discord_slash.SlashContext, value: str) -> None:
     try:
         channel_storage = storage_singleton.guild_storages[ctx.guild].channel_storages[ctx.channel]
     except KeyError:
@@ -51,7 +51,7 @@ async def vote(ctx: discord_slash.SlashContext, value: str):
     )
 
 
-async def reveal(ctx: discord_slash.SlashContext):
+async def reveal(ctx: discord_slash.SlashContext) -> None:
     try:
         channel_storage = storage_singleton.guild_storages[ctx.guild].channel_storages[ctx.channel]
     except KeyError:
@@ -64,7 +64,7 @@ async def reveal(ctx: discord_slash.SlashContext):
     vote_values = ' '.join(v.value for v in channel_storage.votes.values())
     vote_name_clarification = f' for vote "{channel_storage.comment}"' if channel_storage.comment else ''
     answers_per_user = f'\n'.join(f'{author.mention}: {vote.value}' for author, vote in channel_storage.votes.items())
-    msg = await ctx.send(
+    await ctx.send(
         content=(
             f'Answers{vote_name_clarification} are revealed!\n'
             f'{vote_values}\n'
@@ -72,5 +72,3 @@ async def reveal(ctx: discord_slash.SlashContext):
         ),
         allowed_mentions=discord.AllowedMentions(users=False)
     )
-    await msg.edit(suppress=True)
-

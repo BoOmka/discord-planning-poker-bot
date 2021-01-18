@@ -1,3 +1,4 @@
+import statistics
 import typing
 
 import discord
@@ -17,6 +18,10 @@ def _vote_msg(author: discord.User, votes: typing.Dict[discord.User, storage.Vot
         f'\n'
         f'Votes: `{vote_count}`{voter_names_str}'
     )
+
+
+def _to_float(value: str) -> float:
+    return float(value)
 
 
 async def start(ctx: discord_slash.SlashContext, comment: str = None) -> None:
@@ -61,13 +66,29 @@ async def reveal(ctx: discord_slash.SlashContext) -> None:
         )
         return
 
+    values_len = len(channel_storage.votes)
+    if values_len == 0:
+        await ctx.send(
+            content=(
+                f'Cannot reveal votes if there are none! :crying_cat_face:'
+            ),
+            complete_hidden=True
+        )
+        return
+    elif values_len == 1:
+        stdev: float = _to_float(next(iter(channel_storage.votes.values())).value)
+    else:
+        float_values = [_to_float(v.value) for v in channel_storage.votes.values()]
+        stdev: float = statistics.stdev(float_values)
+
     vote_values = ' '.join(v.value for v in channel_storage.votes.values())
     vote_name_clarification = f' for vote "{channel_storage.comment}"' if channel_storage.comment else ''
     answers_per_user = f'\n'.join(f'{author.mention}: {vote.value}' for author, vote in channel_storage.votes.items())
+
     await ctx.send(
         content=(
             f'Answers{vote_name_clarification} are revealed!\n'
-            f'{vote_values}\n'
+            f'{vote_values} (SD={stdev:.2f})\n'
             f'||{answers_per_user}||'
         ),
         allowed_mentions=discord.AllowedMentions(users=False)

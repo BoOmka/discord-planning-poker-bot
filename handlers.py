@@ -103,3 +103,15 @@ async def withdraw(ctx: discord_slash.SlashContext) -> None:
         content=_vote_msg(author=channel_storage.author, votes=channel_storage.votes, comment=channel_storage.comment),
         allowed_mentions=discord.AllowedMentions(users=False)
     )
+
+
+@needs_active_vote
+async def bump(ctx: discord_slash.SlashContext) -> None:
+    channel_storage = await storage.get_channel_storage_or_none(ctx)
+
+    old_message = channel_storage.message
+    channel_storage.message = await ctx.channel.send(
+        _vote_msg(channel_storage.author, channel_storage.votes, channel_storage.comment),
+        allowed_mentions=discord.AllowedMentions(users=False),
+    )
+    await old_message.delete()

@@ -24,14 +24,16 @@ def _to_float(value: str) -> float:
     return float(value)
 
 
-async def start(ctx: discord_slash.SlashContext, comment: str = None) -> None:
+async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: str = None) -> None:
     guild_storage = storage_singleton.guild_storages.setdefault(ctx.guild, storage.GuildVoteStorage(guild=ctx.guild))
     channel_storage = guild_storage.channel_storages[ctx.channel] = storage.ChannelVoteStorage(
         channel=ctx.channel, author=ctx.author, comment=comment,
     )
+    if my_vote is not None:
+        channel_storage.votes[ctx.author] = storage.Vote(author=ctx.author, value=my_vote)
     await ctx.send(content='Vote started', hidden=True)
     channel_storage.message = await ctx.channel.send(
-        _vote_msg(ctx.author, {}, comment),
+        _vote_msg(ctx.author, channel_storage.votes, comment),
         allowed_mentions=discord.AllowedMentions(users=False),
     )
     await channel_storage.message.edit(suppress=True)

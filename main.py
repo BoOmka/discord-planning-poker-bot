@@ -16,6 +16,13 @@ start_options = [
         'name': 'comment',
         'description': 'Optional comment for your Vote',
         'required': False,
+    },
+    {
+        'type': discord_slash.SlashCommandOptionType.STRING,
+        'name': 'my_vote',
+        'description': 'Answer your vote right away',
+        'required': False,
+        'choices': [{'name': f'{x}', 'value': f'{x}'} for x in config.VOTE_CHOICES]
     }
 ]
 vote_options = [
@@ -57,8 +64,8 @@ async def reveal(ctx: discord_slash.SlashContext):
 
 
 @slash.subcommand(base='poker', name='start', description='(Re)Start a new vote in this channel', options=start_options)
-async def start(ctx: discord_slash.SlashContext, comment: str = None):
-    return await handlers.start(ctx=ctx, comment=comment)
+async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: str = None):
+    return await handlers.start(ctx=ctx, comment=comment, my_vote=my_vote)
 
 
 def main():

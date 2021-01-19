@@ -49,7 +49,7 @@ async def vote(ctx: discord_slash.SlashContext, value: str) -> None:
 
     await ctx.send(content='Your vote is accepted!', complete_hidden=True)
 
-    channel_storage.votes.setdefault(ctx.author, storage.Vote(author=ctx.author, value=value))
+    channel_storage.votes[ctx.author] = storage.Vote(author=ctx.author, value=value)
     await channel_storage.message.edit(
         content=_vote_msg(author=channel_storage.author, votes=channel_storage.votes, comment=channel_storage.comment),
         allowed_mentions=discord.AllowedMentions(users=False)

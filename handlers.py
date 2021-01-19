@@ -5,8 +5,8 @@ import discord
 import discord_slash
 
 import storage
-
-storage_singleton = storage.VoteStorage()
+from decorators import needs_active_vote
+from storage import storage_singleton
 
 
 def _vote_msg(author: discord.User, votes: typing.Dict[discord.User, storage.Vote], comment: str = None) -> str:
@@ -39,15 +39,9 @@ async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: s
     await channel_storage.message.edit(suppress=True)
 
 
+@needs_active_vote
 async def vote(ctx: discord_slash.SlashContext, value: str) -> None:
-    try:
-        channel_storage = storage_singleton.guild_storages[ctx.guild].channel_storages[ctx.channel]
-    except KeyError:
-        await ctx.send(
-            content="There's no active vote in this channel. You can start one by typing `/poker start`",
-            complete_hidden=True
-        )
-        return
+    channel_storage = await storage.get_channel_storage_or_none(ctx)
 
     await ctx.send(content='Your vote is accepted!', complete_hidden=True)
 
@@ -58,15 +52,9 @@ async def vote(ctx: discord_slash.SlashContext, value: str) -> None:
     )
 
 
+@needs_active_vote
 async def reveal(ctx: discord_slash.SlashContext) -> None:
-    try:
-        channel_storage = storage_singleton.guild_storages[ctx.guild].channel_storages[ctx.channel]
-    except KeyError:
-        await ctx.send(
-            content="There's no active vote in this channel. You can start one by typing `/poker start`",
-            complete_hidden=True
-        )
-        return
+    channel_storage = await storage.get_channel_storage_or_none(ctx)
 
     values_len = len(channel_storage.votes)
     if values_len == 0:
@@ -100,15 +88,9 @@ async def reveal(ctx: discord_slash.SlashContext) -> None:
     )
 
 
+@needs_active_vote
 async def withdraw(ctx: discord_slash.SlashContext) -> None:
-    try:
-        channel_storage = storage_singleton.guild_storages[ctx.guild].channel_storages[ctx.channel]
-    except KeyError:
-        await ctx.send(
-            content="There's no active vote in this channel. You can start one by typing `/poker start`",
-            complete_hidden=True
-        )
-        return
+    channel_storage = await storage.get_channel_storage_or_none(ctx)
 
     try:
         del channel_storage.votes[ctx.author]

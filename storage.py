@@ -28,3 +28,14 @@ class GuildVoteStorage:
 @dataclasses.dataclass
 class VoteStorage:
     guild_storages: typing.Dict[discord.TextChannel, GuildVoteStorage] = dataclasses.field(default_factory=dict)
+
+
+storage_singleton = VoteStorage()
+
+
+async def get_channel_storage_or_none(ctx):
+    try:
+        channel_storage = storage_singleton.guild_storages[ctx.guild].channel_storages[ctx.channel]
+    except KeyError:
+        channel_storage = None
+    return channel_storage

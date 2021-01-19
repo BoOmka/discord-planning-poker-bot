@@ -17,6 +17,7 @@ class ChannelVoteStorage:
     comment: typing.Optional[str]
     votes: typing.Dict[discord.User, Vote] = dataclasses.field(default_factory=dict)
     message: typing.Optional[discord.Message] = None
+    is_revealed: bool = False
 
 
 @dataclasses.dataclass

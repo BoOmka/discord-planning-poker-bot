@@ -69,7 +69,7 @@ async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: s
 
 
 @slash.subcommand(
-    base='poker', name='bump', description='Re-send vote message (in case it went far away due to another messages)'
+    base='poker', name='bump', description='Re-send vote message (in case it went far away due to other messages)'
 )
 async def bump(ctx: discord_slash.SlashContext):
     return await handlers.bump(ctx=ctx)

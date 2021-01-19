@@ -76,9 +76,12 @@ async def reveal(ctx: discord_slash.SlashContext) -> None:
         )
         return
     elif values_len == 1:
-        stdev: float = _to_float(next(iter(channel_storage.votes.values())).value)
+        value = next(iter(channel_storage.votes.values())).value
+        mean: float = _to_float(value)
+        stdev: float = _to_float(value)
     else:
         float_values = [_to_float(v.value) for v in channel_storage.votes.values()]
+        mean: float = statistics.mean(float_values)
         stdev: float = statistics.stdev(float_values)
 
     vote_values = ' '.join(v.value for v in channel_storage.votes.values())
@@ -88,7 +91,7 @@ async def reveal(ctx: discord_slash.SlashContext) -> None:
     await ctx.send(
         content=(
             f'Answers{vote_name_clarification} are revealed!\n'
-            f'{vote_values} (SD={stdev:.2f})\n'
+            f'{vote_values} (Mean={mean:.2f}, SD={stdev:.2f})\n'
             f'||{answers_per_user}||'
         ),
         allowed_mentions=discord.AllowedMentions(users=False)

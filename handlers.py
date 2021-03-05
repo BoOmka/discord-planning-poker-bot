@@ -60,7 +60,7 @@ async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: s
         content=_vote_msg(channel_storage), allowed_mentions=discord.AllowedMentions(users=False),
     )
     await channel_storage.message.edit(suppress=True)
-    await ctx.send(send_type=InteractionSendType.acknowledge)
+    await ctx.send(send_type=InteractionSendType.acknowledge.value)
 
 
 @needs_active_vote
@@ -92,7 +92,7 @@ async def reveal(ctx: discord_slash.SlashContext) -> None:
     await channel_storage.message.edit(
         content=_vote_msg(channel_storage), allowed_mentions=discord.AllowedMentions(users=False)
     )
-    await ctx.send(send_type=InteractionSendType.acknowledge)
+    await ctx.send(send_type=InteractionSendType.acknowledge.value)
 
 
 @needs_active_vote
@@ -120,4 +120,4 @@ async def bump(ctx: discord_slash.SlashContext) -> None:
         content=_vote_msg(channel_storage), allowed_mentions=discord.AllowedMentions(users=False),
     )
     await old_message.delete()
-    await ctx.send(send_type=InteractionSendType.acknowledge)
+    await ctx.send(send_type=InteractionSendType.acknowledge.value)

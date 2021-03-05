@@ -1,7 +1,7 @@
 import enum
 
 
-class InteractionSendType(enum.Enum, int):
+class InteractionSendType(int, enum.Enum):
     pong = 1
     acknowledge = 2
     channel_message = 3

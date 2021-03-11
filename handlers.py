@@ -2,11 +2,42 @@ import statistics
 
 import discord
 import discord_slash
+from PIL import Image, ImageDraw, ImageFont
 
+import config
 import storage
 from decorators import needs_active_vote
 from enums import InteractionSendType
 from storage import storage_singleton
+
+
+FONT_SIZE = 30
+SPACE = ' '
+SPACE_WIDTH_PX = 14
+
+
+def _get_string_length_px(string: str) -> int:
+    im = Image.new("RGB", (3200, 400))
+    draw = ImageDraw.Draw(im)
+    font = ImageFont.truetype(config.DISCORD_FONT, size=FONT_SIZE)
+    draw.text((0, 0), string, font=font)
+    im = im.crop(im.getbbox())
+    return im.width
+
+
+def _px_to_spaces(width_px: int, space_width_px: int) -> int:
+    return width_px // space_width_px
+
+
+def _make_vote_line(
+        author: discord.User,
+        vote: storage.Vote,
+        mention: bool = False,
+        additional_spacing: int = 0,
+) -> str:
+    name = author.mention if mention else author.name
+    spacer = SPACE * additional_spacing
+    return f'{name}:{spacer}{SPACE}{vote.value}'
 
 
 def _vote_msg(channel_storage: storage.ChannelVoteStorage) -> str:
@@ -23,12 +54,20 @@ def _vote_msg(channel_storage: storage.ChannelVoteStorage) -> str:
             stdev: float = statistics.stdev(float_values)
 
         vote_values = ' '.join(v.value for v in channel_storage.votes.values())
-        answers_per_user = (
-            f'\n'.join(f'{author.mention}: {vote.value}' for author, vote in channel_storage.votes.items())
+
+        vote_maxwidth = max(
+            _get_string_length_px(_make_vote_line(author, vote))
+            for author, vote in channel_storage.votes.items()
         )
+        answers_per_user = []
+        for author, vote in channel_storage.votes.items():
+            maxwidth_diff_px = vote_maxwidth - _get_string_length_px(_make_vote_line(author, vote))
+            spacing = _px_to_spaces(maxwidth_diff_px, SPACE_WIDTH_PX)
+            answers_per_user.append(_make_vote_line(author, vote, mention=True, additional_spacing=spacing))
+        answers_per_user_str = f'\n'.join(answers_per_user)
         vote_details = (
             f'{vote_values} (Mean={mean:.2f}, SD={stdev:.2f})\n'
-            f'||{answers_per_user}||'
+            f'||{answers_per_user_str}||'
         )
     else:
         reveal_status = ''

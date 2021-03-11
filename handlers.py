@@ -13,7 +13,7 @@ from storage import storage_singleton
 
 FONT_SIZE = 30
 SPACE = ' '
-SPACE_WIDTH_PX = 14
+SPACE_WIDTH_PX = 15
 
 
 def _get_string_length_px(string: str) -> int:

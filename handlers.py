@@ -35,7 +35,7 @@ def _make_vote_line(
         mention: bool = False,
         additional_spacing: int = 0,
 ) -> str:
-    name = author.mention if mention else author.name
+    name = author.mention if mention else author.display_name
     spacer = SPACE * additional_spacing
     return f'{name}:{spacer}{SPACE}{vote.value}'
 

@@ -87,6 +87,7 @@ def _to_float(value: str) -> float:
 
 
 async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: str = None) -> None:
+    await ctx.defer()
     guild_storage = storage_singleton.guild_storages.setdefault(ctx.guild, storage.GuildVoteStorage(guild=ctx.guild))
     channel_storage = guild_storage.channel_storages[ctx.channel] = storage.ChannelVoteStorage(
         channel=ctx.channel, author=ctx.author, comment=comment,
@@ -101,14 +102,18 @@ async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: s
 
 @needs_active_vote
 async def vote(ctx: discord_slash.SlashContext, value: str) -> None:
+    await ctx.defer(hidden=True)
     channel_storage = await storage.get_channel_storage_or_none(ctx)
 
-    await ctx.send(content='Your vote is accepted!', hidden=True, delete_after=config.ACK_NORMAL_DELETE_AFTER_SECONDS)
+    await ctx.send(content='Your vote is accepted!', hidden=True)
 
     channel_storage.votes[ctx.author] = storage.Vote(author=ctx.author, value=value)
-    await channel_storage.message.edit(
-        content=_vote_msg(channel_storage), allowed_mentions=discord.AllowedMentions(users=False)
-    )
+    try:
+        await channel_storage.message.edit(
+            content=_vote_msg(channel_storage), allowed_mentions=discord.AllowedMentions(users=False)
+        )
+    except discord.errors.NotFound:
+        await ctx.send(content='This vote has ended!', hidden=True)
 
 
 @needs_active_vote
@@ -120,28 +125,39 @@ async def reveal(ctx: discord_slash.SlashContext) -> None:
             content=(
                 f'Cannot reveal votes if there are none! :crying_cat_face:'
             ),
-            hidden=True
+            hidden=True,
+            delete_after=config.ACK_NORMAL_DELETE_AFTER_SECONDS
         )
         return
 
     channel_storage.is_revealed = True
-    await channel_storage.message.edit(
-        content=_vote_msg(channel_storage), allowed_mentions=discord.AllowedMentions(users=False)
-    )
-    await ctx.send(content='Vote revealed!', hidden=True, delete_after=config.ACK_EAT_DELETE_AFTER_SECONDS)
+    try:
+        await channel_storage.message.edit(
+            content=_vote_msg(channel_storage), allowed_mentions=discord.AllowedMentions(users=False)
+        )
+    except discord.errors.NotFound:
+        try:
+            await channel_storage.message.delete()
+        except discord.errors.NotFound:
+            pass
+        channel_storage.message = await ctx.send(
+            content=_vote_msg(channel_storage), allowed_mentions=discord.AllowedMentions(users=False)
+        )
+    await ctx.send(content='Vote revealed!', hidden=True)
 
 
 @needs_active_vote
 async def withdraw(ctx: discord_slash.SlashContext) -> None:
+    await ctx.defer(hidden=True)
     channel_storage = await storage.get_channel_storage_or_none(ctx)
 
     try:
         del channel_storage.votes[ctx.author]
     except KeyError:
-        await ctx.send(content="You didn't vote yet.", hidden=True, delete_after=config.ACK_NORMAL_DELETE_AFTER_SECONDS)
+        await ctx.send(content="You didn't vote yet.", hidden=True)
         return
 
-    await ctx.send(content='Your vote is withdrawn!', hidden=True, delete_after=config.ACK_NORMAL_DELETE_AFTER_SECONDS)
+    await ctx.send(content='Your vote is withdrawn!', hidden=True)
     await channel_storage.message.edit(
         content=_vote_msg(channel_storage), allowed_mentions=discord.AllowedMentions(users=False)
     )
@@ -149,6 +165,7 @@ async def withdraw(ctx: discord_slash.SlashContext) -> None:
 
 @needs_active_vote
 async def bump(ctx: discord_slash.SlashContext) -> None:
+    await ctx.defer()
     channel_storage = await storage.get_channel_storage_or_none(ctx)
 
     old_message = channel_storage.message

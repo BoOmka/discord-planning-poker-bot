@@ -12,7 +12,7 @@ class Vote:
 
 @dataclasses.dataclass
 class ChannelVoteStorage:
-    channel: discord.TextChannel
+    channel: typing.Optional[discord.TextChannel]
     author: discord.User
     comment: typing.Optional[str]
     votes: typing.Dict[discord.User, Vote] = dataclasses.field(default_factory=dict)

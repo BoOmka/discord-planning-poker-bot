@@ -8,7 +8,7 @@ import handlers
 
 intents = discord.Intents.all()
 bot = discord.ext.commands.Bot(command_prefix='/', intents=discord.Intents.all())
-slash = discord_slash.SlashCommand(bot, auto_register=False)
+slash = discord_slash.SlashCommand(bot, sync_commands=True)
 
 start_options = [
     {

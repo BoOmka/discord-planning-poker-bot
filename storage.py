@@ -2,6 +2,7 @@ import dataclasses
 import typing
 
 import discord
+import discord_slash
 
 
 @dataclasses.dataclass
@@ -34,9 +35,16 @@ class VoteStorage:
 storage_singleton = VoteStorage()
 
 
-async def get_channel_storage_or_none(ctx):
+def get_channel_storage_or_none_by_ctx(ctx: discord_slash.SlashContext) -> typing.Optional[ChannelVoteStorage]:
+    return get_channel_storage_or_none(ctx.guild, ctx.channel)
+
+
+def get_channel_storage_or_none(
+        guild: discord.Guild,
+        channel: discord.TextChannel,
+) -> typing.Optional[ChannelVoteStorage]:
     try:
-        channel_storage = storage_singleton.guild_storages[ctx.guild].channel_storages[ctx.channel]
+        channel_storage = storage_singleton.guild_storages[guild].channel_storages[channel]
     except KeyError:
         channel_storage = None
     return channel_storage

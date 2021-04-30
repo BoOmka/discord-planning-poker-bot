@@ -5,6 +5,7 @@ import discord_slash
 
 import config
 import handlers
+import reaction_handlers
 
 intents = discord.Intents.all()
 bot = discord.ext.commands.Bot(command_prefix='/', intents=discord.Intents.all())
@@ -40,7 +41,7 @@ vote_options = [
 
 @slash.slash(name='ppvote', description='Shortcut for /poker vote', options=vote_options)
 async def ppvote(ctx: discord_slash.SlashContext, value: str):
-    return await handlers.vote(ctx=ctx, value=value)
+    return await handlers.vote_ctx(ctx=ctx, value=value)
 
 
 @slash.subcommand(
@@ -50,7 +51,7 @@ async def ppvote(ctx: discord_slash.SlashContext, value: str):
     options=vote_options,
 )
 async def vote(ctx: discord_slash.SlashContext, value: str):
-    return await handlers.vote(ctx=ctx, value=value)
+    return await handlers.vote_ctx(ctx=ctx, value=value)
 
 
 @slash.subcommand(base='poker', name='withdraw', description='Withdraw your vote')
@@ -60,7 +61,7 @@ async def withdraw(ctx: discord_slash.SlashContext):
 
 @slash.subcommand(base='poker', name='reveal', description="Reveal everyone's vote")
 async def reveal(ctx: discord_slash.SlashContext):
-    return await handlers.reveal(ctx=ctx)
+    return await handlers.reveal_ctx(ctx=ctx)
 
 
 @slash.subcommand(base='poker', name='start', description='(Re)Start a new vote in this channel', options=start_options)
@@ -73,6 +74,12 @@ async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: s
 )
 async def bump(ctx: discord_slash.SlashContext):
     return await handlers.bump(ctx=ctx)
+
+
+@bot.event
+async def on_reaction_add(reaction: discord.Reaction, user: discord.User):
+    if not user.bot:
+        return await reaction_handlers.handle_reaction(reaction, user)
 
 
 def main():

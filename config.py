@@ -1,4 +1,4 @@
-VOTE_CHOICES = [0, 0.5, 1, 2, 3, 5, 8, 13]
+VOTE_CHOICES = [0, 0.5, 1, 2, 3, 5, 8, 13, ":graphql:"]
 DISCORD_FONT = "fonts/Whitney-Medium.ttf"
 
 ACK_NORMAL_DELETE_AFTER_SECONDS = 15

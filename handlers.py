@@ -83,7 +83,10 @@ def _vote_msg(channel_storage: storage.ChannelVoteStorage) -> str:
 
 
 def _to_float(value: str) -> float:
-    return float(value)
+    try:
+        return float(value)
+    except ValueError:
+        return 100.0
 
 
 async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: str = None) -> None:

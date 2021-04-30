@@ -77,6 +77,7 @@ def _vote_msg(channel_storage: storage.ChannelVoteStorage) -> str:
 
     return (
         f'{reveal_status}Vote: {comment}\n'
+        f'Click numbers to vote. Click {config.REVEAL_EMOJI} to reveal.\n'
         f'\n'
         f'Votes: `{vote_count}`\n'
         f'{vote_details}'
@@ -107,6 +108,8 @@ async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: s
             await channel_storage.message.add_reaction(emoji)
         except:
             pass
+    for emoji in config.SPACER_EMOJIS:
+        await channel_storage.message.add_reaction(emoji)
     await channel_storage.message.add_reaction(config.REVEAL_EMOJI)
 
     await channel_storage.message.edit(suppress=True)
@@ -152,19 +155,22 @@ async def reveal_ctx(ctx: discord_slash.SlashContext) -> None:
     await ctx.send(content='Vote revealed!', hidden=True)
 
 
-async def reveal(channel_storage: storage.ChannelVoteStorage, on_404_coro: t.Optional[t.Coroutine] = None) -> None:
+async def reveal(channel_storage: storage.ChannelVoteStorage, on_404_coro: t.Optional[t.Coroutine] = None) -> bool:
     channel_storage.is_revealed = True
     try:
         await channel_storage.message.edit(
             content=_vote_msg(channel_storage), allowed_mentions=discord.AllowedMentions(users=False)
         )
+        return True
     except discord.errors.NotFound:
         try:
             await channel_storage.message.delete()
         except discord.errors.NotFound:
-            pass
+            return True
         if on_404_coro:
             channel_storage.message = await on_404_coro
+    except statistics.StatisticsError:
+        return False
 
 
 @needs_active_vote

@@ -144,8 +144,7 @@ async def reveal_ctx(ctx: discord_slash.SlashContext) -> None:
             content=(
                 f'Cannot reveal votes if there are none! :crying_cat_face:'
             ),
-            hidden=True,
-            delete_after=config.ACK_NORMAL_DELETE_AFTER_SECONDS
+            hidden=True
         )
         return
     on_404_coro = ctx.send(

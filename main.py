@@ -23,7 +23,7 @@ start_options = [
         'name': 'my_vote',
         'description': 'Answer your vote right away',
         'required': False,
-        'choices': [{'name': f'{x}', 'value': f'{x}'} for x in config.VOTE_CHOICES]
+        'choices': [{'name': f'{x}', 'value': f'{x}'} for x in config.ALLOWED_VOTE_EMOJIS.values()]
     }
 ]
 vote_options = [
@@ -32,7 +32,7 @@ vote_options = [
         'name': 'value',
         'description': 'Your vote',
         'required': True,
-        'choices': [{'name': f'{x}', 'value': f'{x}'} for x in config.VOTE_CHOICES]
+        'choices': [{'name': f'{x}', 'value': f'{x}'} for x in config.ALLOWED_VOTE_EMOJIS.values()]
     }
 ]
 

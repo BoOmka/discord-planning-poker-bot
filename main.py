@@ -44,6 +44,16 @@ async def ppvote(ctx: discord_slash.SlashContext, value: str):
     return await handlers.vote_ctx(ctx=ctx, value=value)
 
 
+@slash.subcommand(base='poker', name='start', description='(Re)Start a new vote in this channel', options=start_options)
+async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: str = None):
+    return await handlers.start(ctx=ctx, comment=comment, my_vote=my_vote)
+
+
+@slash.subcommand(base='poker', name='reveal', description="Reveal everyone's vote")
+async def reveal(ctx: discord_slash.SlashContext):
+    return await handlers.reveal_ctx(ctx=ctx)
+
+
 @slash.subcommand(
     base='poker',
     name='vote',
@@ -57,16 +67,6 @@ async def vote(ctx: discord_slash.SlashContext, value: str):
 @slash.subcommand(base='poker', name='withdraw', description='Withdraw your vote')
 async def withdraw(ctx: discord_slash.SlashContext):
     return await handlers.withdraw(ctx=ctx)
-
-
-@slash.subcommand(base='poker', name='reveal', description="Reveal everyone's vote")
-async def reveal(ctx: discord_slash.SlashContext):
-    return await handlers.reveal_ctx(ctx=ctx)
-
-
-@slash.subcommand(base='poker', name='start', description='(Re)Start a new vote in this channel', options=start_options)
-async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: str = None):
-    return await handlers.start(ctx=ctx, comment=comment, my_vote=my_vote)
 
 
 @slash.subcommand(

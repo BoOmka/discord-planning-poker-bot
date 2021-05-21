@@ -16,10 +16,5 @@ async def handle_reaction(reaction: discord.Reaction, user: discord.User) -> Non
             await reaction.remove(user)
         if str(reaction.emoji) == config.REVEAL_EMOJI:
             revealed = await handlers.reveal(channel_storage)
-            if revealed:
-                await reaction.clear()
-                for r in reaction.message.reactions:
-                    if str(r.emoji) in config.SPACER_EMOJIS:
-                        await r.clear()
-            else:
+            if not revealed:
                 await reaction.remove(user)

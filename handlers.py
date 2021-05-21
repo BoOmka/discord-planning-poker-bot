@@ -161,6 +161,9 @@ async def reveal(channel_storage: storage.ChannelVoteStorage, on_404_coro: t.Opt
         await channel_storage.message.edit(
             content=_vote_msg(channel_storage), allowed_mentions=discord.AllowedMentions(users=False)
         )
+        for r in channel_storage.message.reactions:
+            if str(r.emoji) in config.SPACER_EMOJIS or str(r.emoji) == config.REVEAL_EMOJI:
+                await r.clear()
         return True
     except discord.errors.NotFound:
         try:

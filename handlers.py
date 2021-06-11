@@ -88,7 +88,7 @@ def _to_float(value: str) -> float:
     try:
         return float(value)
     except ValueError:
-        return 100.0
+        return config.CUSTOM_VOTE_VALUES.get(value, 100.0)
 
 
 async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: str = None) -> None:

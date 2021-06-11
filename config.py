@@ -15,6 +15,10 @@ ALLOWED_VOTE_EMOJIS: typing.Dict[typing.Union[str, discord.Emoji], str] = {
     "<:graphql:811165209409880104>": ":graphql:",
     "<:this_is_the_way:819929485746634772>": ":this_is_the_way:",
 }
+CUSTOM_VOTE_VALUES: typing.Dict[str, float] = {
+    ":graphql:": 100.0,
+    ":this_is_the_way:": 0.0,
+}
 SPACER_EMOJIS: typing.List[str] = ["▪"]
 REVEAL_EMOJI: str = "🏁"
 DISCORD_FONT = "fonts/Whitney-Medium.ttf"

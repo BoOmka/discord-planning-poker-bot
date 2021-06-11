@@ -103,6 +103,11 @@ async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: s
         content=_vote_msg(channel_storage), allowed_mentions=discord.AllowedMentions(users=False),
     )
 
+    await channel_storage.message.edit(suppress=True)
+    await _add_vote_emojis(channel_storage)
+
+
+async def _add_vote_emojis(channel_storage):
     for emoji in config.ALLOWED_VOTE_EMOJIS.keys():
         try:
             await channel_storage.message.add_reaction(emoji)
@@ -111,8 +116,6 @@ async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: s
     for emoji in config.SPACER_EMOJIS:
         await channel_storage.message.add_reaction(emoji)
     await channel_storage.message.add_reaction(config.REVEAL_EMOJI)
-
-    await channel_storage.message.edit(suppress=True)
 
 
 @needs_active_vote
@@ -205,3 +208,4 @@ async def bump(ctx: discord_slash.SlashContext) -> None:
         await old_message.delete()
     except discord.errors.NotFound:
         pass
+    await _add_vote_emojis(channel_storage)

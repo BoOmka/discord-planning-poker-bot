@@ -13,7 +13,7 @@ async def _complain_no_active_vote(ctx):
 def needs_active_vote(func):
     @functools.wraps(func)
     async def wrapped(ctx, *args, **kwargs):
-        channel_storage = storage.get_channel_storage_or_none_by_ctx(ctx)
+        channel_storage = storage.get_message_storage_or_none_by_ctx(ctx)
         if channel_storage is None:
             await _complain_no_active_vote(ctx)
             return

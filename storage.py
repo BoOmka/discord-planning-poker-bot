@@ -12,13 +12,20 @@ class Vote:
 
 
 @dataclasses.dataclass
-class ChannelVoteStorage:
+class MessageVoteStorage:
     channel: typing.Optional[discord.TextChannel]
     author: discord.User
     comment: typing.Optional[str]
+    interaction_id: int
     votes: typing.Dict[discord.User, Vote] = dataclasses.field(default_factory=dict)
     message: typing.Optional[discord.Message] = None
     is_revealed: bool = False
+
+
+@dataclasses.dataclass
+class ChannelVoteStorage:
+    channel: typing.Optional[discord.TextChannel]
+    message_storages: typing.Dict[int, MessageVoteStorage] = dataclasses.field(default_factory=dict)
 
 
 @dataclasses.dataclass
@@ -35,16 +42,32 @@ class VoteStorage:
 storage_singleton = VoteStorage()
 
 
-def get_channel_storage_or_none_by_ctx(ctx: discord_slash.SlashContext) -> typing.Optional[ChannelVoteStorage]:
-    return get_channel_storage_or_none(ctx.guild, ctx.channel)
+def get_message_storage_or_none_by_ctx(ctx: discord_slash.SlashContext) -> typing.Optional[MessageVoteStorage]:
+    return get_last_message_storage_or_none(ctx.guild, ctx.channel)
 
 
-def get_channel_storage_or_none(
+def _get_channel_storage(
         guild: discord.Guild,
         channel: discord.TextChannel,
-) -> typing.Optional[ChannelVoteStorage]:
+) -> ChannelVoteStorage:
+    return storage_singleton.guild_storages[guild].channel_storages[channel]
+
+
+def get_last_message_storage_or_none(
+        guild: discord.Guild,
+        channel: discord.TextChannel,
+) -> typing.Optional[MessageVoteStorage]:
+    channel_storage = _get_channel_storage(guild, channel)
     try:
-        channel_storage = storage_singleton.guild_storages[guild].channel_storages[channel]
+        return list(channel_storage.message_storages.values())[-1]
     except KeyError:
-        channel_storage = None
-    return channel_storage
+        return None
+
+
+def get_message_storage_or_none(
+        guild: discord.Guild,
+        channel: discord.TextChannel,
+        interaction_id: int,
+) -> typing.Optional[MessageVoteStorage]:
+    channel_storage = _get_channel_storage(guild, channel)
+    return channel_storage.message_storages.get(interaction_id, None)

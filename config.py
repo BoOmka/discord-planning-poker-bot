@@ -19,24 +19,6 @@ VOTE_VALUES_REDUCED: typing.Dict[str, float] = {
     for k, v in VOTE_VALUES.items()
 }
 
-ALLOWED_VOTE_EMOJIS: typing.Dict[typing.Union[str, discord.Emoji], str] = {
-    "0️⃣": "0",
-    "<:half:837685500612444201>": "0.5",
-    "1️⃣": "1",
-    "2️⃣": "2",
-    "3️⃣": "3",
-    "5️⃣": "5",
-    "8️⃣": "8",
-    "<:thirteen:837685478605586442>": "13",
-    "<:twentyone:852888122000932876>": "21",
-    "<:graphql:811165209409880104>": ":graphql:",
-    "<:this_is_the_way:819929485746634772>": ":this_is_the_way:",
-}
-CUSTOM_VOTE_VALUES: typing.Dict[str, float] = {
-    ":graphql:": 100.0,
-    ":this_is_the_way:": 0.0,
-}
-SPACER_EMOJIS: typing.List[str] = ["▪"]
 DISCORD_FONT = "fonts/Whitney-Medium.ttf"
 DISCORD_MAX_BUTTONS_IN_ROW = 5
 

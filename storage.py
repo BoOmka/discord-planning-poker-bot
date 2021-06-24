@@ -17,6 +17,7 @@ class MessageVoteStorage:
     author: discord.User
     comment: typing.Optional[str]
     interaction_id: int
+    valid_values: typing.Dict[str, float]
     votes: typing.Dict[discord.User, Vote] = dataclasses.field(default_factory=dict)
     message: typing.Optional[discord.Message] = None
     is_revealed: bool = False

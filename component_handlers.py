@@ -27,7 +27,7 @@ class ControlButton(Button):
 
 
 def parse_custom_id(custom_id: str) -> Button:
-    _, interaction_id_raw, component_type_raw, value_raw = custom_id.split("_")
+    _, interaction_id_raw, component_type_raw, value_raw = custom_id.split("_", 3)
     component_type = ComponentType[component_type_raw]
     interaction_id = int(interaction_id_raw)
     if component_type == ComponentType.variant:

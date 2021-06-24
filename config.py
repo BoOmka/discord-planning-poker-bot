@@ -2,6 +2,8 @@ import typing
 
 import discord
 
+from models import CustomPartialEmoji
+
 VOTE_VALUES: typing.Dict[typing.Union[str, discord.PartialEmoji], float] = {
     "0": 0,
     "½": 0.5,
@@ -12,11 +14,7 @@ VOTE_VALUES: typing.Dict[typing.Union[str, discord.PartialEmoji], float] = {
     "8": 8,
     "13": 13,
     "21": 21,
-    discord.PartialEmoji(name="graphql", id=811165209409880104): 100,
-}
-VOTE_VALUES_REDUCED: typing.Dict[str, float] = {
-    (k.name if isinstance(k, discord.PartialEmoji) else k): v
-    for k, v in VOTE_VALUES.items()
+    CustomPartialEmoji(name="graphql", id=811165209409880104): 100,
 }
 
 DISCORD_FONT = "fonts/Whitney-Medium.ttf"

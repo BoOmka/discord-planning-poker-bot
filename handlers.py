@@ -10,6 +10,7 @@ from PIL import (
 )
 from discord_slash import ButtonStyle
 from discord_slash.utils import manage_components
+from discord_slash.utils.manage_components import spread_to_rows
 
 import config as c
 import storage
@@ -19,7 +20,6 @@ from enums import (
     ControlType,
 )
 from storage import storage_singleton
-from utils import chunks
 
 FONT_SIZE = 30
 SPACE = ' '
@@ -56,10 +56,10 @@ def _vote_msg(message_storage: storage.MessageVoteStorage) -> str:
         reveal_status = '[REVEALED] '
         if vote_count == 1:
             value = next(iter(message_storage.votes.values())).value
-            mean: float = _to_float(value)
+            mean: float = _to_float(message_storage.valid_values, value)
             stdev: float = 0.0
         else:
-            float_values = [_to_float(v.value) for v in message_storage.votes.values()]
+            float_values = [_to_float(message_storage.valid_values, v.value) for v in message_storage.votes.values()]
             mean: float = statistics.mean(float_values)
             stdev: float = statistics.stdev(float_values)
 
@@ -94,14 +94,19 @@ def _vote_msg(message_storage: storage.MessageVoteStorage) -> str:
     )
 
 
-def _to_float(value: str) -> float:
+def _to_float(valid_values: t.Dict[str, float], value: str) -> float:
     try:
-        return float(c.VOTE_VALUES_REDUCED[value])
+        return float(valid_values[value])
     except ValueError:
         return 0.0
 
 
-async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: str = None) -> None:
+async def start(
+        ctx: discord_slash.SlashContext,
+        valid_values: t.Dict[str, float],
+        comment: str = None,
+        my_vote: str = None,
+) -> None:
     await ctx.defer()
     guild_storage = storage_singleton.guild_storages.setdefault(ctx.guild, storage.GuildVoteStorage(guild=ctx.guild))
     channel_storage = guild_storage.channel_storages.setdefault(
@@ -113,6 +118,7 @@ async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: s
         author=ctx.author,
         comment=comment,
         interaction_id=int(ctx.interaction_id),
+        valid_values=valid_values,
     )
     if my_vote is not None:
         message_storage.votes[ctx.author] = storage.Vote(author=ctx.author, value=my_vote)
@@ -125,26 +131,23 @@ async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: s
     await message_storage.message.edit(suppress=True)
 
 
-def _make_vote_button_rows(interaction_id: int) -> t.List[dict]:
-    components = []
-    for chunk in chunks(list(c.VOTE_VALUES.keys()), c.DISCORD_MAX_BUTTONS_IN_ROW):
-        buttons = []
-        for vote_var in chunk:
-            if isinstance(vote_var, discord.PartialEmoji):
-                button = manage_components.create_button(
-                    style=ButtonStyle.secondary,
-                    emoji=vote_var,
-                    custom_id=f"{c.COMPONENT_PREFIX}_{interaction_id}_{ComponentType.variant.value}_{vote_var.name}",
-                )
-            else:
-                button = manage_components.create_button(
-                    style=ButtonStyle.secondary,
-                    label=vote_var,
-                    custom_id=f"{c.COMPONENT_PREFIX}_{interaction_id}_{ComponentType.variant.value}_{vote_var}",
-                )
-            buttons.append(button)
-        components.append(manage_components.create_actionrow(*buttons))
-    return components
+def _make_vote_button_rows(interaction_id: int, valid_values: t.Dict[str, float]) -> t.List[dict]:
+    buttons = []
+    for vote_var in valid_values.keys():
+        if isinstance(vote_var, discord.PartialEmoji):
+            button = manage_components.create_button(
+                style=ButtonStyle.secondary,
+                emoji=vote_var,
+                custom_id=f"{c.COMPONENT_PREFIX}_{interaction_id}_{ComponentType.variant.value}_{vote_var.name}",
+            )
+        else:
+            button = manage_components.create_button(
+                style=ButtonStyle.secondary,
+                label=vote_var,
+                custom_id=f"{c.COMPONENT_PREFIX}_{interaction_id}_{ComponentType.variant.value}_{vote_var}",
+            )
+        buttons.append(button)
+    return spread_to_rows(*buttons, max_in_row=c.DISCORD_MAX_BUTTONS_IN_ROW)
 
 
 def _make_controls_row(interaction_id: int, reveal_disabled: bool = False) -> dict:
@@ -167,7 +170,7 @@ def _make_controls_row(interaction_id: int, reveal_disabled: bool = False) -> di
 def _make_components(message_storage: storage.MessageVoteStorage) -> t.List[dict]:
     reveal_disabled = message_storage.is_revealed or not message_storage.votes
     return (
-            _make_vote_button_rows(message_storage.interaction_id)
+            _make_vote_button_rows(message_storage.interaction_id, message_storage.valid_values)
             + [_make_controls_row(message_storage.interaction_id, reveal_disabled=reveal_disabled)]
     )
 

@@ -47,7 +47,7 @@ def _make_vote_line(
 ) -> str:
     name = author.mention if mention else author.display_name
     spacer = SPACE * additional_spacing
-    return f'{name}:{spacer}{SPACE}{vote.value}'
+    return f'{name}:{spacer}{SPACE}{vote.value} млн/месяц прироста GMV'
 
 
 def _vote_msg(message_storage: storage.MessageVoteStorage) -> str:

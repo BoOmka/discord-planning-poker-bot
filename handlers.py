@@ -84,15 +84,9 @@ def _vote_msg(message_storage: storage.MessageVoteStorage) -> str:
 
         vote_values = ' '.join(_get_vote_value_or_emoji(v.value) for v in message_storage.valid_votes.values())
 
-        vote_maxwidth = max(
-            _get_string_length_px(_make_vote_line(author, vote))
-            for author, vote in message_storage.valid_votes.items()
-        )
         answers_per_user = []
         for author, vote in message_storage.valid_votes.items():
-            maxwidth_diff_px = vote_maxwidth - _get_string_length_px(_make_vote_line(author, vote))
-            spacing = _px_to_spaces(maxwidth_diff_px, SPACE_WIDTH_PX)
-            answers_per_user.append(_make_vote_line(author, vote, mention=True, additional_spacing=spacing))
+            answers_per_user.append(_make_vote_line(author, vote, mention=True))
         answers_per_user_str = f'\n'.join(answers_per_user)
         vote_details = (
             f'{vote_values} (Mean={mean:.2f}, SD={stdev:.2f})\n'

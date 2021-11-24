@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 discord.py = "==1.7.3"
-discord-py-slash-command = "==2.0.0"
+discord-py-slash-command = "==3.0.1"
 Pillow = "==8.1.2"
 
 [dev-packages]

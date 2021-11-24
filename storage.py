@@ -9,6 +9,7 @@ import discord_slash
 class Vote:
     author: discord.User
     value: str
+    unit: str
 
 
 @dataclasses.dataclass
@@ -21,6 +22,10 @@ class MessageVoteStorage:
     votes: typing.Dict[discord.User, Vote] = dataclasses.field(default_factory=dict)
     message: typing.Optional[discord.Message] = None
     is_revealed: bool = False
+
+    @property
+    def valid_votes(self) -> typing.Dict[discord.User, Vote]:
+        return {k: v for k, v in self.votes.items() if v.value}
 
 
 @dataclasses.dataclass

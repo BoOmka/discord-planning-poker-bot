@@ -1,3 +1,6 @@
+import typing as t
+from dataclasses import dataclass
+
 import discord
 
 
@@ -13,3 +16,10 @@ class CustomPartialEmoji(discord.PartialEmoji):
 
     def __str__(self):
         return self.name
+
+
+@dataclass
+class UnitSelectOption:
+    name: str
+    unit: str
+    emoji: t.Union[str, CustomPartialEmoji]

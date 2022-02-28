@@ -134,7 +134,7 @@ async def start(
         valid_values=valid_values,
     )
     if my_vote is not None:
-        message_storage.votes[ctx.author] = storage.Vote(author=ctx.author, value=my_vote)
+        message_storage.votes[ctx.author] = storage.Vote(author=ctx.author, value=my_vote, unit="")
     message_storage.message = await ctx.send(
         content=_vote_msg(message_storage),
         allowed_mentions=discord.AllowedMentions(users=False),

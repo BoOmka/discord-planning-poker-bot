@@ -44,7 +44,7 @@ def _px_to_spaces(width_px: int, space_width_px: int) -> int:
 
 def _get_vote_value_or_emoji(vote_value: str) -> str:
     result = vote_value
-    for key in config.VOTE_VALUES:
+    for key in config.PERCENT_VALUES:
         if not isinstance(key, PartialEmoji):
             continue
         if vote_value == key:

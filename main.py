@@ -28,7 +28,7 @@ VOTE_START_MY_VOTE_OPTION = create_option(
     description="Answer your vote right away",
     option_type=discord_slash.SlashCommandOptionType.STRING,
     required=False,
-    choices=[create_choice(str(x), str(x)) for x in config.VOTE_VALUES],
+    choices=[create_choice(str(x), str(x)) for x in config.PERCENT_VALUES],
 )
 VOTE_START_BINARY_FIRST_VALUE_OPTION = create_option(
     name="first_value",
@@ -55,8 +55,8 @@ VOTE_START_BINARY_SECOND_VALUE_OPTION = create_option(
         VOTE_START_MY_VOTE_OPTION,
     ],
 )
-async def start(ctx: discord_slash.SlashContext, comment: str = None, my_vote: str = None):
-    return await handlers.start(ctx=ctx, valid_values=config.VOTE_VALUES, comment=comment, my_vote=my_vote)
+async def start_fibonacci(ctx: discord_slash.SlashContext, comment: str = None, my_vote: str = None):
+    return await handlers.start(ctx=ctx, valid_values=config.FIBONACCI_VALUES, comment=comment, my_vote=my_vote)
 
 
 def _convert_option_to_emoji(option: str) -> typing.Union[CustomPartialEmoji, str]:
@@ -96,6 +96,20 @@ async def start_binary(
         comment=comment,
         my_vote=my_vote,
     )
+
+
+@slash.subcommand(
+    base="poker",
+    subcommand_group="start",
+    name="percent",
+    description="Start a new vote with percentage options in this channel",
+    options=[
+        VOTE_START_COMMENT_OPTION,
+        VOTE_START_MY_VOTE_OPTION,
+    ],
+)
+async def start_percent(ctx: discord_slash.SlashContext, comment: str = None, my_vote: str = None):
+    return await handlers.start(ctx=ctx, valid_values=config.PERCENT_VALUES, comment=comment, my_vote=my_vote)
 
 
 @slash.subcommand(

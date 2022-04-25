@@ -23,7 +23,14 @@ VOTE_START_COMMENT_OPTION = create_option(
     option_type=discord_slash.SlashCommandOptionType.STRING,
     required=False,
 )
-VOTE_START_MY_VOTE_OPTION = create_option(
+VOTE_START_MY_VOTE_FIBONACCI_OPTION = create_option(
+    name="my_vote",
+    description="Answer your vote right away",
+    option_type=discord_slash.SlashCommandOptionType.STRING,
+    required=False,
+    choices=[create_choice(str(x), str(x)) for x in config.FIBONACCI_VALUES],
+)
+VOTE_START_MY_VOTE_PERCENT_OPTION = create_option(
     name="my_vote",
     description="Answer your vote right away",
     option_type=discord_slash.SlashCommandOptionType.STRING,
@@ -52,7 +59,7 @@ VOTE_START_BINARY_SECOND_VALUE_OPTION = create_option(
     description="Start a new vote with fibonacci-like options in this channel",
     options=[
         VOTE_START_COMMENT_OPTION,
-        VOTE_START_MY_VOTE_OPTION,
+        VOTE_START_MY_VOTE_FIBONACCI_OPTION,
     ],
 )
 async def start_fibonacci(ctx: discord_slash.SlashContext, comment: str = None, my_vote: str = None):
@@ -78,7 +85,7 @@ def _convert_option_to_emoji(option: str) -> typing.Union[CustomPartialEmoji, st
         VOTE_START_COMMENT_OPTION,
         VOTE_START_BINARY_FIRST_VALUE_OPTION,
         VOTE_START_BINARY_SECOND_VALUE_OPTION,
-        VOTE_START_MY_VOTE_OPTION,
+        VOTE_START_MY_VOTE_PERCENT_OPTION,
     ],
 )
 async def start_binary(
@@ -105,7 +112,7 @@ async def start_binary(
     description="Start a new vote with percentage options in this channel",
     options=[
         VOTE_START_COMMENT_OPTION,
-        VOTE_START_MY_VOTE_OPTION,
+        VOTE_START_MY_VOTE_PERCENT_OPTION,
     ],
 )
 async def start_percent(ctx: discord_slash.SlashContext, comment: str = None, my_vote: str = None):

@@ -1,0 +1,14 @@
+version: "3.3"
+services:
+  app:
+    container_name: "discord-planning-poker-bot-app"
+    restart: unless-stopped
+    build:
+      context: ../..
+      dockerfile: deploy/local/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ../..:$PWD
+    working_dir: $PWD
+    command: ["python", "-O", "main.py"]

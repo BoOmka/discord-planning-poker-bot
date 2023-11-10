@@ -1,11 +1,11 @@
-FROM python:3.9.1
+FROM python:3.9
 
 RUN pip install pipenv
 
-COPY ./Pipfile /app/Pipfile
-COPY ./Pipfile.lock /app/Pipfile.lock
+COPY Pipfile /app/Pipfile
+COPY Pipfile.lock /app/Pipfile.lock
 
-WORKDIR /app
+WORKDIR /app/
 
 ENV PYTHONPATH "${PYTHONPATH}:/app"
 

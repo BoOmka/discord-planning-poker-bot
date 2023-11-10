@@ -2,15 +2,15 @@ from dataclasses import dataclass
 
 import discord_slash
 
-import config
-import handlers
-from enums import (
+from app import config
+from app import handlers
+from app.enums import (
     ComponentType,
     ControlType,
     SelectType,
     UnitSelect,
 )
-from storage import get_message_storage_or_none
+from app.storage import get_message_storage_or_none
 
 
 @dataclass

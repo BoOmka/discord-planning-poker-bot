@@ -1,6 +1,6 @@
 import functools
 
-import storage
+from app import storage
 
 
 async def _complain_no_active_vote(ctx):

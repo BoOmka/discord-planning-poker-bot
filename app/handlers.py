@@ -13,16 +13,16 @@ from discord_slash import ButtonStyle
 from discord_slash.utils import manage_components
 from discord_slash.utils.manage_components import spread_to_rows
 
-import config
-import config as c
-import storage
-from decorators import needs_active_vote
-from enums import (
+from app import config
+from app import storage
+from app.decorators import needs_active_vote
+from app.enums import (
     ComponentType,
     ControlType,
     UnitSelect,
 )
-from storage import storage_singleton
+from app.storage import storage_singleton
+
 
 FONT_SIZE = 30
 SPACE = ' '
@@ -32,7 +32,7 @@ SPACE_WIDTH_PX = 15
 def _get_string_length_px(string: str) -> int:
     im = Image.new("RGB", (3200, 400))
     draw = ImageDraw.Draw(im)
-    font = ImageFont.truetype(c.DISCORD_FONT, size=FONT_SIZE)
+    font = ImageFont.truetype(config.DISCORD_FONT, size=FONT_SIZE)
     draw.text((0, 0), string, font=font)
     im = im.crop(im.getbbox())
     return im.width
@@ -151,16 +151,16 @@ def _make_vote_button_rows(interaction_id: int, valid_values: t.Dict[str, float]
             button = manage_components.create_button(
                 style=ButtonStyle.secondary,
                 emoji=vote_var,
-                custom_id=f"{c.COMPONENT_PREFIX}_{interaction_id}_{ComponentType.variant.value}_{vote_var.name}",
+                custom_id=f"{config.COMPONENT_PREFIX}_{interaction_id}_{ComponentType.variant.value}_{vote_var.name}",
             )
         else:
             button = manage_components.create_button(
                 style=ButtonStyle.secondary,
                 label=vote_var,
-                custom_id=f"{c.COMPONENT_PREFIX}_{interaction_id}_{ComponentType.variant.value}_{vote_var}",
+                custom_id=f"{config.COMPONENT_PREFIX}_{interaction_id}_{ComponentType.variant.value}_{vote_var}",
             )
         buttons.append(button)
-    return spread_to_rows(*buttons, max_in_row=c.DISCORD_MAX_BUTTONS_IN_ROW)
+    return spread_to_rows(*buttons, max_in_row=config.DISCORD_MAX_BUTTONS_IN_ROW)
 
 
 def _make_controls_row(interaction_id: int, reveal_disabled: bool = False) -> dict:
@@ -169,12 +169,12 @@ def _make_controls_row(interaction_id: int, reveal_disabled: bool = False) -> di
             style=ButtonStyle.success,
             label="Reveal",
             disabled=reveal_disabled,
-            custom_id=f"{c.COMPONENT_PREFIX}_{interaction_id}_{ComponentType.control.value}_{ControlType.reveal.value}",
+            custom_id=f"{config.COMPONENT_PREFIX}_{interaction_id}_{ComponentType.control.value}_{ControlType.reveal.value}",
         ),
         manage_components.create_button(
             style=ButtonStyle.danger,
             label="Unvote",
-            custom_id=f"{c.COMPONENT_PREFIX}_{interaction_id}_{ComponentType.control.value}_{ControlType.unvote.value}",
+            custom_id=f"{config.COMPONENT_PREFIX}_{interaction_id}_{ComponentType.control.value}_{ControlType.unvote.value}",
         )
     ]
     return manage_components.create_actionrow(*buttons)
@@ -188,7 +188,7 @@ def _make_unit_select_row(interaction_id: int) -> dict:
                 for option in UnitSelect
             ],
             placeholder="Переключить единицы измерения",
-            custom_id=f"{c.COMPONENT_PREFIX}_{interaction_id}_{ComponentType.select.value}_unit",
+            custom_id=f"{config.COMPONENT_PREFIX}_{interaction_id}_{ComponentType.select.value}_unit",
         )
     )
 

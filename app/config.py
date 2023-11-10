@@ -2,7 +2,8 @@ import typing
 
 import discord
 
-from models import CustomPartialEmoji
+from app.models import CustomPartialEmoji
+
 
 FIBONACCI_VALUES: typing.Dict[typing.Union[str, discord.PartialEmoji], float] = {
     "0": 0,

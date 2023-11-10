@@ -8,10 +8,10 @@ from discord_slash.utils.manage_commands import (
     create_option,
 )
 
-import component_handlers
-import config
-import handlers
-from models import CustomPartialEmoji
+from app import component_handlers
+from app import config
+from app import handlers
+from app.models import CustomPartialEmoji
 
 intents = discord.Intents.all()
 bot = discord.ext.commands.Bot(command_prefix='/', intents=discord.Intents.all())

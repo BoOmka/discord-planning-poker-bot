@@ -1,6 +1,6 @@
 import enum
 
-from models import (
+from app.models import (
     CustomPartialEmoji,
     UnitSelectOption,
 )
